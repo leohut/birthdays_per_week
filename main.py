@@ -30,8 +30,8 @@ def get_birthdays_per_week(users):
         birthday_day_of_week = this_year_birthday.weekday()
         
         # Якщо день народження припадає на суботу або неділю, привітати в понеділок
-        if birthdays_per_week in ["Saturday", "Sunday"]:
-                birthdays_per_week = "Monday"
+        if birthday_day_of_week in ["Saturday", "Sunday"]:
+                birthday_day_of_week = "Monday"
 
         # Знайдемо відстань між поточним днем тижня та днем народження
         days_to_birthday = (birthday_day_of_week - current_day_of_week) % 7
