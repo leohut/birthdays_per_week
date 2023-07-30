@@ -1,66 +1,32 @@
 from datetime import datetime, timedelta
 
-
 def get_birthdays_per_week(users):
-    # Визначимо дні тижня відповідно до індексів
-    days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
-    # Отримаємо поточний день тижня (0 - понеділок, 6 - неділя)
-    current_day_of_week = datetime.today().weekday()
-
-    # Створимо пустий словник для збереження іменинників за днями тижня
-    birthdays_per_week = {
-          "Monday": [],
-          "Tuesday": [],
-          "Wednesday": [],
-          "Thursday": [],
-          "Friday": [],
-          "Saturday": [],
-          "Sunday": []
-         }
-
-    # Пройдемося по списку користувачів і додамо їх до відповідного дня тижня у словник
+       
+    birthdays_by_weekday = {i: [] for i in range(7)}  # Створюємо словник для зберігання іменинників на кожний день тижня.
     for user in users:
-        name = user["name"]
-        birthday = user["birthday"]
-
-        # Визначимо день народження на поточному тижні (залишивши рік незмінним)
-        this_year_birthday = birthday.replace(year=datetime.today().year)
-
-        # Визначимо день тижня для дня народження
-        birthday_day_of_week = this_year_birthday.weekday()
-
-        # Визначимо день тижня ПОНЕДІЛОК
-        monday = current_day_of_week - current_day_of_week % 7
-
-        # Знайдемо відстань між поточним днем тижня та днем народження
-        days_to_birthday = (birthday_day_of_week - monday) % 7
-
-        # Якщо день народження вже був на цьому тижні і припадає на суботу або неділю,
-        # перенесемо його на наступний тиждень
+        birthday = user["birthday"].date() # Отримуємо день народження користувача з об'єкту datetime.
+        birthday_day_of_week = birthday.weekday() # Визначаємо день тижня, на який припадає день народження (понеділок - 0, неділя - 6).
         
-        # if birthday_day_of_week in ["Saturday", "Sunday"]:
-        #           days_to_birthday = "Monday"
+        if birthday_day_of_week >= 5:  # Перевіряємо, чи є день тижня вихідним (субота або неділя). 5 і 6 - вихідні дні (субота, неділя).            
+            days_to_add = 2 if birthday_day_of_week == 5 else 1 # Знаходимо, скільки днів потрібно додати до дня народження, щоб перенести його.            
+            birthday = birthday + timedelta(days=days_to_add) # Знаходимо новий день для привітання.
         
-        if birthday_day_of_week == 0 and birthday_day_of_week >= 5:
-            birthday_day_of_week = 7
-
-        # Додамо користувача до списку відповідного дня тижня
-        birthdays_per_week[days_of_week[(current_day_of_week + days_to_birthday) % 7]].append(name)
-
-    # Виведемо іменинників у консоль
-    for day, names in birthdays_per_week.items():
-        if names:
-            print(f"{day}: {', '.join(names)}")
-
-# Приклад тестових даних
+        birthdays_by_weekday[birthday.weekday()].append(user["name"]) # Додаємо ім'я користувача до списку іменинників на відповідний день тижня.
+    
+    for i in range(7):   # Виводимо іменинників
+        day_name = datetime(2000, 1, 3 + i).strftime('%A')  
+        if birthdays_by_weekday[i]:
+            print(f"{day_name}: {', '.join(birthdays_by_weekday[i])}")
+            
+            
+# тестовий список users:
 users = [
-    {"name": "Bill", "birthday": datetime(2000, 8, 30)}, # неділя
-    {"name": "Jill", "birthday": datetime(1995, 8, 15)}, # субота
-    {"name": "Kim", "birthday": datetime(1987, 8, 8)},  # субота
-    {"name": "Jan", "birthday": datetime(1992, 8, 19)},  # середа
-    {"name": "John", "birthday": datetime(1964, 8, 27)},  # четвер
-    {"name": "Mikhael", "birthday": datetime(1998, 8, 16)},  # неділя
+    {"name": "Alex", "birthday": datetime(2023, 7, 25)}, #вівторок
+    {"name": "Eva", "birthday": datetime(2022, 1, 2)}, #неділя
+    {"name": "Mikhael", "birthday": datetime(2022, 1, 1)}, #суббота
+    {"name": "John", "birthday": datetime(2023, 7, 27)},  # Четвер
+    {"name": "Mike", "birthday": datetime(2023, 7, 28)},  # П'ятниця
+    {"name": "Bill", "birthday": datetime(2023, 7, 30)},  # Неділя
+    {"name": "Enrique", "birthday": datetime(2023, 7, 26)},   #середа
 ]
-
 get_birthdays_per_week(users)
